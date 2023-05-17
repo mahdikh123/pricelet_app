@@ -159,7 +159,7 @@ class _HomePageState extends State<HomePage> {
                                                     barcode: _searchList[index]
                                                         .barcode,
                                                     price: _searchList[index]
-                                                        .price);
+                                                        .price.toString());
                                               })).then((value) {
                                                 setState(() {});
                                               });

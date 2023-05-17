@@ -9,7 +9,7 @@ class Item {
 
   final String barcode;
 
-  final String price;
+  final double price;
 
   final String scheduleTime;
 

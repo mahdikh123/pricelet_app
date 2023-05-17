@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:floor/floor.dart';
 import 'package:flutter/material.dart';
 import 'package:pricelet_app/database/database.dart';
@@ -101,7 +103,7 @@ class _AddItemState extends State<AddItem> {
             widget._itemNameController.value.text,
             widget._serialNoController.value.text,
             DateFormat('MMMM dd, yyyy').format(DateTime.now()),
-            widget._priceController.value.text));
+            double.parse(widget._priceController.value.text)));
       });
     });
     Navigator.pop(context);
@@ -115,7 +117,7 @@ class _AddItemState extends State<AddItem> {
           widget._itemNameController.value.text,
           widget._serialNoController.value.text,
           DateFormat('MMMM dd, yyyy').format(DateTime.now()),
-          widget._priceController.value.text));
+          double.parse(widget._priceController.value.text)));
     });
 
     Navigator.pop(context);

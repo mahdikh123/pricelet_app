@@ -63,13 +63,15 @@ class _$AppDatabase extends AppDatabase {
 
   ItemDao? _itemDaoInstance;
 
+  RateDAO? _rateDaoInstance;
+
   Future<sqflite.Database> open(
     String path,
     List<Migration> migrations, [
     Callback? callback,
   ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 1,
+      version: 2,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -85,7 +87,9 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `items` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `barcode` TEXT NOT NULL, `price` TEXT NOT NULL, `scheduleTime` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `items` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `barcode` TEXT NOT NULL, `price` REAL NOT NULL, `scheduleTime` TEXT NOT NULL)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `rate` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `rate` REAL NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -96,6 +100,11 @@ class _$AppDatabase extends AppDatabase {
   @override
   ItemDao get itemDao {
     return _itemDaoInstance ??= _$ItemDao(database, changeListener);
+  }
+
+  @override
+  RateDAO get rateDao {
+    return _rateDaoInstance ??= _$RateDAO(database, changeListener);
   }
 }
 
@@ -160,7 +169,7 @@ class _$ItemDao extends ItemDao {
             row['name'] as String,
             row['barcode'] as String,
             row['scheduleTime'] as String,
-            row['price'] as String));
+            row['price'] as double));
   }
 
   @override
@@ -171,7 +180,7 @@ class _$ItemDao extends ItemDao {
             row['name'] as String,
             row['barcode'] as String,
             row['scheduleTime'] as String,
-            row['price'] as String));
+            row['price'] as double));
   }
 
   @override
@@ -182,7 +191,7 @@ class _$ItemDao extends ItemDao {
             row['name'] as String,
             row['barcode'] as String,
             row['scheduleTime'] as String,
-            row['price'] as String),
+            row['price'] as double),
         queryableName: 'items',
         isView: false);
   }
@@ -195,7 +204,7 @@ class _$ItemDao extends ItemDao {
             row['name'] as String,
             row['barcode'] as String,
             row['scheduleTime'] as String,
-            row['price'] as String),
+            row['price'] as double),
         arguments: [barcode]);
   }
 
@@ -218,5 +227,43 @@ class _$ItemDao extends ItemDao {
   @override
   Future<int> deleteAll(List<Item> list) {
     return _itemDeletionAdapter.deleteListAndReturnChangedRows(list);
+  }
+}
+
+class _$RateDAO extends RateDAO {
+  _$RateDAO(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
+        _rateInsertionAdapter = InsertionAdapter(database, 'rate',
+            (Rate item) => <String, Object?>{'id': item.id, 'rate': item.rate}),
+        _rateUpdateAdapter = UpdateAdapter(database, 'rate', ['id'],
+            (Rate item) => <String, Object?>{'id': item.id, 'rate': item.rate});
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<Rate> _rateInsertionAdapter;
+
+  final UpdateAdapter<Rate> _rateUpdateAdapter;
+
+  @override
+  Future<Rate?> findRateById(int id) async {
+    return _queryAdapter.query('select * from rate where id= ?1 limit 1',
+        mapper: (Map<String, Object?> row) => Rate(row['rate'] as double),
+        arguments: [id]);
+  }
+
+  @override
+  Future<void> insertRate(Rate rate) async {
+    await _rateInsertionAdapter.insert(rate, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateRate(Rate rate) async {
+    await _rateUpdateAdapter.update(rate, OnConflictStrategy.abort);
   }
 }
