@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pricelet_app/barcode_scanner.dart';
 import 'package:pricelet_app/home_page.dart';
 import 'package:pricelet_app/lira_rate.dart';
+import 'package:pricelet_app/shopping_cart.dart';
 
 class MyDrawer extends StatelessWidget {
   @override
@@ -11,19 +12,34 @@ class MyDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           const UserAccountsDrawerHeader(
-            accountName: Text('PRICE APP'),
-            accountEmail: Text('pricelete@example.com'),
+            accountName: Text('Market APP'),
+            accountEmail: Text('mkh95@gamil.com'),
             currentAccountPicture: CircleAvatar(
+              backgroundImage: AssetImage('assets/images/rounded-dollar.png'),
               backgroundColor: Colors.white,
-              child: Text(
-                'PA',
-                style: TextStyle(fontSize: 24.0),
-              ),
             ),
           ),
           ListTile(
+            leading: Icon(Icons.shopify_sharp),
+            title: Text('Shopping Cart'),
+            onTap: () {
+              
+              Navigator.pushReplacementNamed(context, '/cart');
+              
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.list),
+            title: Text('Items'),
+            onTap: () {
+              // Handle home route
+              Navigator.pop(context);
+              Navigator.pushReplacementNamed(context, '/');
+            },
+          ),
+          ListTile(
             leading: Icon(Icons.qr_code_scanner),
-            title: Text('BarCode Scan'),
+            title: Text('Check Price'),
             onTap: () {
               // Handle home route
               Navigator.pop(context);
@@ -36,15 +52,14 @@ class MyDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.list),
-            title: Text('Items'),
+            leading: Icon(Icons.currency_exchange),
+            title: Text('Edit Rate'),
             onTap: () {
-              // Handle home route
               Navigator.pop(context);
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HomePage(homeTitle: 'All Items'),
+                  builder: (context) => MyWebView(),
                 ),
               );
             },
@@ -61,26 +76,6 @@ class MyDrawer extends StatelessWidget {
             title: Text('Suppliers'),
             onTap: () {
               // Handle home route
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.currency_exchange),
-            title: Text('Rate'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MyWebView(),
-                ),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Settings'),
-            onTap: () {
-              // Handle settings route
             },
           ),
           Divider(),

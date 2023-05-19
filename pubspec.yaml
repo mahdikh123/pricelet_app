@@ -22,4 +22,8 @@ dev_dependencies:
   build_runner: ^2.3.3
 
 flutter:
+  assets:
+    - assets/images/
+    - icons/ic_launcher.png
+    - icons/AppIcon
   uses-material-design: true
